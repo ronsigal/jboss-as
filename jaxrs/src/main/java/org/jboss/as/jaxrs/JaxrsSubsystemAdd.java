@@ -57,10 +57,8 @@ class JaxrsSubsystemAdd extends AbstractBoottimeAddStepHandler {
 
     static final JaxrsSubsystemAdd INSTANCE = new JaxrsSubsystemAdd();
 
-    protected void populateModel(ModelNode operation, ModelNode model) throws OperationFailedException {
-        for (AttributeDefinition attr : JaxrsAttribute.attributes) {
-            attr.validateAndSet(operation, model);
-        }
+    JaxrsSubsystemAdd(AttributeDefinition... attributes) {
+        super(attributes);
     }
 
     protected void performBoottime(final OperationContext context, ModelNode operation, Resource resource) throws OperationFailedException {

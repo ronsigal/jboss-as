@@ -90,7 +90,7 @@ public class JaxrsExtension implements Extension {
     }
 
     private static void registerAttributes(ManagementResourceRegistration registration) {
-       for (AttributeDefinition definition : JaxrsAttribute.attributes) {
+       for (AttributeDefinition definition : JaxrsAttribute.ATTRIBUTES) {
           registration.registerReadWriteAttribute(definition, null, new JaxrsParamHandler(definition));
        }
     }

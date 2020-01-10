@@ -66,7 +66,7 @@ public interface  JaxrsAttribute {
             .setDefaultValue(ModelNode.TRUE)
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
-    
+
     SimpleAttributeDefinition RESTEASY_DISABLE_HTML_SANITIZER = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_DISABLE_HTML_SANITIZER, ModelType.BOOLEAN)
             .setRequired(false)
             .setAllowExpression(true)
@@ -215,7 +215,7 @@ public interface  JaxrsAttribute {
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
 
-    public static AttributeDefinition[] attributes = new AttributeDefinition[] {
+    public static AttributeDefinition[] ATTRIBUTES = new AttributeDefinition[] {
             JAXRS_2_0_REQUEST_MATCHING,
             RESTEASY_ADD_CHARSET,
             RESTEASY_BUFFER_EXCEPTION_ENTITY,
@@ -273,9 +273,9 @@ public interface  JaxrsAttribute {
             RESTEASY_LANGUAGE_MAPPINGS,
             RESTEASY_MEDIA_TYPE_MAPPINGS
     };
-    
-    public Set<AttributeDefinition> simpleAttributes = new HashSet<>(Arrays. asList(simpleAttributesArray));
-    public Set<AttributeDefinition> listAttributes = new HashSet<>(Arrays. asList(listAttributeArray));
-    public Set<AttributeDefinition> jndiAttributes = new HashSet<>(Arrays. asList(jndiAttributesArray));
-    public Set<AttributeDefinition> mapAttributes = new HashSet<>(Arrays. asList(mapAttributeArray));
+
+    public Set<AttributeDefinition> SIMPLE_ATTRIBUTES = new HashSet<>(Arrays. asList(simpleAttributesArray));
+    public Set<AttributeDefinition> LIST_ATTRIBUTES = new HashSet<>(Arrays. asList(listAttributeArray));
+    public Set<AttributeDefinition> JNDI_ATTRIBUTES = new HashSet<>(Arrays. asList(jndiAttributesArray));
+    public Set<AttributeDefinition> MAP_ATTRIBUTES = new HashSet<>(Arrays. asList(mapAttributeArray));
 }

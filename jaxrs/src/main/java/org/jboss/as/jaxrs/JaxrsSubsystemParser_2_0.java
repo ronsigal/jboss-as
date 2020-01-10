@@ -38,10 +38,10 @@ import org.jboss.as.controller.PropertiesAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
 import org.jboss.as.controller.operations.common.Util;
-import org.jboss.as.controller.operations.validation.ModelTypeValidator;
 import org.jboss.as.controller.persistence.SubsystemMarshallingContext;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
+import org.jboss.dmr.Property;
 import org.jboss.staxmapper.XMLElementReader;
 import org.jboss.staxmapper.XMLElementWriter;
 import org.jboss.staxmapper.XMLExtendedStreamReader;
@@ -167,51 +167,43 @@ public class JaxrsSubsystemParser_2_0 implements XMLStreamConstants, XMLElementR
     public void writeContent(final XMLExtendedStreamWriter streamWriter, final SubsystemMarshallingContext context) throws XMLStreamException {
         context.startSubsystemElement(JaxrsExtension.NAMESPACE_2_0, false);
         ModelNode subsystem = context.getModelNode();
-        for (AttributeDefinition attr : JaxrsAttribute.attributes) {
-            if (JaxrsAttribute.simpleAttributes.contains(attr)) {
+        for (AttributeDefinition attr : JaxrsAttribute.ATTRIBUTES) {
+            final String attrName = attr.getName();
+            if (!subsystem.hasDefined(attrName)) {
+                continue;
+            }
+            if (JaxrsAttribute.SIMPLE_ATTRIBUTES.contains(attr)) {
                 attr.marshallAsElement(subsystem, true, streamWriter);
-            } else if (JaxrsAttribute.listAttributes.contains(attr)) {
+            } else if (JaxrsAttribute.LIST_ATTRIBUTES.contains(attr)) {
                 streamWriter.writeStartElement(attr.getName());
                 List<ModelNode> list = subsystem.get(attr.getName()).asList();
                 for (ModelNode node : list) {
                     streamWriter.writeStartElement("class");
-//                    streamWriter.writeCharacters("    <class>");
                     streamWriter.writeCharacters(node.asString().trim());
-//                    streamWriter.writeCharacters("</class>\n");
                     streamWriter.writeEndElement();
                 }
                 streamWriter.writeEndElement();
-//                streamWriter.writeCharacters("</");
-//                streamWriter.writeCharacters(attr.getName());
-//                streamWriter.writeCharacters(">");
-            } else if (JaxrsAttribute.jndiAttributes.contains(attr)) {
-                streamWriter.writeCharacters("<");
-                streamWriter.writeCharacters(attr.getName());
-                streamWriter.writeCharacters(">\n");
+            } else if (JaxrsAttribute.JNDI_ATTRIBUTES.contains(attr)) {
+                streamWriter.writeStartElement(attr.getName());
                 List<ModelNode> list = subsystem.get(attr.getName()).asList();
                 for (ModelNode node : list) {
-                    streamWriter.writeCharacters("    <jndi>");
+                    streamWriter.writeStartElement("jndi");
                     streamWriter.writeCharacters(node.asString().trim());
-                    streamWriter.writeCharacters("</jndi>\n");
+                    streamWriter.writeEndElement();
                 }
-                streamWriter.writeCharacters("</");
-                streamWriter.writeCharacters(attr.getName());
-                streamWriter.writeCharacters(">\n");
-            } else if (JaxrsAttribute.mapAttributes.contains(attr)) {
-                streamWriter.writeCharacters("<");
-                streamWriter.writeCharacters(attr.getName());
-                streamWriter.writeCharacters(">\n");
+                streamWriter.writeEndElement();
+            } else if (JaxrsAttribute.MAP_ATTRIBUTES.contains(attr)) {
+                streamWriter.writeStartElement(attr.getName());
                 List<ModelNode> list = subsystem.get(attr.getName()).asList();
                 for (ModelNode node : list) {
-                    streamWriter.writeCharacters("    <entry key=\">");
-                    streamWriter.writeCharacters(node.asString().trim());
-                    streamWriter.writeCharacters("</entry>\n");
+                    Property property = node.asProperty();
+                    streamWriter.writeStartElement("entry");
+                    streamWriter.writeAttribute("key", property.getName());
+                    streamWriter.writeCharacters(property.getValue().asString().trim());
+                    streamWriter.writeEndElement();
                 }
-                streamWriter.writeCharacters("</");
-                streamWriter.writeCharacters(attr.getName());
-                streamWriter.writeCharacters(">");
+                streamWriter.writeEndElement();
             }
-            
         }
         streamWriter.writeEndElement();
     }
@@ -240,14 +232,11 @@ public class JaxrsSubsystemParser_2_0 implements XMLStreamConstants, XMLElementR
             throw unexpectedElement(reader);
         }
         final String name = element.getLocalName();
-        System.out.println("name: " + name);
         while (reader.hasNext() && reader.nextTag() != END_ELEMENT) {
             if (!tag.equals(reader.getLocalName())) {
-                System.out.println("unexpected element: " + element.getLocalName() + ", tag: " + tag);
                 throw unexpectedElement(reader);
             }
             String value = parseElementNoAttributes(reader);
-            
             subsystem.get(name).add(value);
         }
     }
@@ -274,11 +263,11 @@ public class JaxrsSubsystemParser_2_0 implements XMLStreamConstants, XMLElementR
             attribute.parseAndAddParameterElement(array[0], value, subsystem, reader);
         }
     }
-    
+
     protected String parseElementNoAttributes(final XMLExtendedStreamReader reader) throws XMLStreamException {
         requireNoAttributes(reader);
         return reader.getElementText().trim();
     }
-    
+
     SimpleAttributeDefinition CLASS = new SimpleAttributeDefinitionBuilder("class", ModelType.STRING).build();
 }
