@@ -24,11 +24,11 @@ package org.jboss.as.jaxrs;
 
 import static org.jboss.as.jaxrs.logging.JaxrsLogger.JAXRS_LOGGER;
 
+import org.jboss.as.controller.AttributeDefinition;
 import org.jboss.as.controller.Extension;
 import org.jboss.as.controller.ExtensionContext;
 import org.jboss.as.controller.ModelVersion;
 import org.jboss.as.controller.PathElement;
-import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SubsystemRegistration;
 import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.as.controller.descriptions.ResourceDescriptionResolver;
@@ -90,7 +90,7 @@ public class JaxrsExtension implements Extension {
     }
 
     private static void registerAttributes(ManagementResourceRegistration registration) {
-       for (SimpleAttributeDefinition definition : JaxrsAttribute.attributes) {
+       for (AttributeDefinition definition : JaxrsAttribute.attributes) {
           registration.registerReadWriteAttribute(definition, null, new JaxrsParamHandler(definition));
        }
     }

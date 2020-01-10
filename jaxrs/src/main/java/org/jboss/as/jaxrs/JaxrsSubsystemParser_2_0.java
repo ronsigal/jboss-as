@@ -22,6 +22,7 @@
 
 package org.jboss.as.jaxrs;
 
+import static org.jboss.as.controller.parsing.ParseUtils.requireAttributes;
 import static org.jboss.as.controller.parsing.ParseUtils.requireNoAttributes;
 import static org.jboss.as.controller.parsing.ParseUtils.unexpectedElement;
 
@@ -31,11 +32,16 @@ import java.util.List;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 
+import org.jboss.as.controller.AttributeDefinition;
 import org.jboss.as.controller.PathAddress;
+import org.jboss.as.controller.PropertiesAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinition;
+import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
 import org.jboss.as.controller.operations.common.Util;
+import org.jboss.as.controller.operations.validation.ModelTypeValidator;
 import org.jboss.as.controller.persistence.SubsystemMarshallingContext;
 import org.jboss.dmr.ModelNode;
+import org.jboss.dmr.ModelType;
 import org.jboss.staxmapper.XMLElementReader;
 import org.jboss.staxmapper.XMLElementWriter;
 import org.jboss.staxmapper.XMLExtendedStreamReader;
@@ -61,91 +67,91 @@ public class JaxrsSubsystemParser_2_0 implements XMLStreamConstants, XMLElementR
             switch (element) {
 
                 case JAXRS_2_0_REQUEST_MATCHING:
-                    handleElement(reader, encountered, subsystem, JaxrsElement.JAXRS_2_0_REQUEST_MATCHING);
+                    handleSimpleElement(reader, encountered, subsystem, JaxrsElement.JAXRS_2_0_REQUEST_MATCHING);
                     break;
 
                 case RESTEASY_ADD_CHARSET:
-                    handleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_ADD_CHARSET);
+                    handleSimpleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_ADD_CHARSET);
                     break;
 
                 case RESTEASY_BUFFER_EXCEPTION_ENTITY:
-                    handleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_BUFFER_EXCEPTION_ENTITY);
+                    handleSimpleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_BUFFER_EXCEPTION_ENTITY);
                     break;
 
                 case RESTEASY_DISABLE_HTML_SANITIZER:
-                    handleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_DISABLE_HTML_SANITIZER);
+                    handleSimpleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_DISABLE_HTML_SANITIZER);
                     break;
 
                 case RESTEASY_DISABLE_PROVIDERS:
-                    handleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_DISABLE_PROVIDERS);
+                    handleList("class", reader, encountered, subsystem, JaxrsElement.RESTEASY_DISABLE_PROVIDERS);
                     break;
 
                 case RESTEASY_DOCUMENT_EXPAND_ENTITY_REFERENCES:
-                    handleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_DOCUMENT_EXPAND_ENTITY_REFERENCES);
+                    handleSimpleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_DOCUMENT_EXPAND_ENTITY_REFERENCES);
                     break;
 
                 case RESTEASY_DOCUMENT_SECURE_DISABLE_DTDS:
-                    handleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_DOCUMENT_SECURE_DISABLE_DTDS);
+                    handleSimpleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_DOCUMENT_SECURE_DISABLE_DTDS);
                     break;
 
                 case RESTEASY_DOCUMENT_SECURE_PROCESSING_FEATURE:
-                    handleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_DOCUMENT_SECURE_PROCESSING_FEATURE);
+                    handleSimpleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_DOCUMENT_SECURE_PROCESSING_FEATURE);
                     break;
 
                 case RESTEASY_GZIP_MAX_INPUT:
-                    handleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_GZIP_MAX_INPUT);
+                    handleSimpleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_GZIP_MAX_INPUT);
                     break;
 
                 case RESTEASY_JNDI_RESOURCES:
-                    handleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_JNDI_RESOURCES);
+                    handleList("jndi", reader, encountered, subsystem, JaxrsElement.RESTEASY_JNDI_RESOURCES);
                     break;
 
                 case RESTEASY_LANGUAGE_MAPPINGS:
-                    handleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_LANGUAGE_MAPPINGS);
+                    handleMap(reader, encountered, subsystem, JaxrsElement.RESTEASY_LANGUAGE_MAPPINGS);
                     break;
 
                 case RESTEASY_MEDIA_TYPE_MAPPINGS:
-                    handleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_MEDIA_TYPE_MAPPINGS);
+                    handleMap(reader, encountered, subsystem, JaxrsElement.RESTEASY_MEDIA_TYPE_MAPPINGS);
                     break;
 
                 case RESTEASY_MEDIA_TYPE_PARAM_MAPPING:
-                    handleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_MEDIA_TYPE_PARAM_MAPPING);
+                    handleSimpleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_MEDIA_TYPE_PARAM_MAPPING);
                     break;
 
                 case RESTEASY_PREFERJACKSONOVERJSONB:
-                    handleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_PREFERJACKSONOVERJSONB);
+                    handleSimpleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_PREFERJACKSONOVERJSONB);
                     break;
 
                 case RESTEASY_PROVIDERS:
-                    handleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_PROVIDERS);
+                    handleList("class", reader, encountered, subsystem, JaxrsElement.RESTEASY_PROVIDERS);
                     break;
 
                 case RESTEASY_RESOURCES:
-                    handleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_RESOURCES);
+                    handleList("class", reader, encountered, subsystem, JaxrsElement.RESTEASY_RESOURCES);
                     break;
 
                 case RESTEASY_RFC7232_PRECONDITIONS:
-                    handleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_RFC7232_PRECONDITIONS);
+                    handleSimpleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_RFC7232_PRECONDITIONS);
                     break;
 
                 case RESTEASY_ROLE_BASED_SECURITY:
-                    handleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_ROLE_BASED_SECURITY);
+                    handleSimpleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_ROLE_BASED_SECURITY);
                     break;
 
                 case RESTEASY_SECURE_RANDOM_MAX_USE:
-                    handleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_SECURE_RANDOM_MAX_USE);
+                    handleSimpleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_SECURE_RANDOM_MAX_USE);
                     break;
 
                 case RESTEASY_USE_BUILTIN_PROVIDERS:
-                    handleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_USE_BUILTIN_PROVIDERS);
+                    handleSimpleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_USE_BUILTIN_PROVIDERS);
                     break;
 
                 case RESTEASY_USE_CONTAINER_FORM_PARAMS:
-                    handleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_USE_CONTAINER_FORM_PARAMS);
+                    handleSimpleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_USE_CONTAINER_FORM_PARAMS);
                     break;
 
                 case RESTEASY_WIDER_REQUEST_MATCHING:
-                    handleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_WIDER_REQUEST_MATCHING);
+                    handleSimpleElement(reader, encountered, subsystem, JaxrsElement.RESTEASY_WIDER_REQUEST_MATCHING);
                     break;
 
                 default:
@@ -161,13 +167,56 @@ public class JaxrsSubsystemParser_2_0 implements XMLStreamConstants, XMLElementR
     public void writeContent(final XMLExtendedStreamWriter streamWriter, final SubsystemMarshallingContext context) throws XMLStreamException {
         context.startSubsystemElement(JaxrsExtension.NAMESPACE_2_0, false);
         ModelNode subsystem = context.getModelNode();
-        for (SimpleAttributeDefinition attr : JaxrsAttribute.attributes) {
-            attr.marshallAsElement(subsystem, true, streamWriter);
+        for (AttributeDefinition attr : JaxrsAttribute.attributes) {
+            if (JaxrsAttribute.simpleAttributes.contains(attr)) {
+                attr.marshallAsElement(subsystem, true, streamWriter);
+            } else if (JaxrsAttribute.listAttributes.contains(attr)) {
+                streamWriter.writeStartElement(attr.getName());
+                List<ModelNode> list = subsystem.get(attr.getName()).asList();
+                for (ModelNode node : list) {
+                    streamWriter.writeStartElement("class");
+//                    streamWriter.writeCharacters("    <class>");
+                    streamWriter.writeCharacters(node.asString().trim());
+//                    streamWriter.writeCharacters("</class>\n");
+                    streamWriter.writeEndElement();
+                }
+                streamWriter.writeEndElement();
+//                streamWriter.writeCharacters("</");
+//                streamWriter.writeCharacters(attr.getName());
+//                streamWriter.writeCharacters(">");
+            } else if (JaxrsAttribute.jndiAttributes.contains(attr)) {
+                streamWriter.writeCharacters("<");
+                streamWriter.writeCharacters(attr.getName());
+                streamWriter.writeCharacters(">\n");
+                List<ModelNode> list = subsystem.get(attr.getName()).asList();
+                for (ModelNode node : list) {
+                    streamWriter.writeCharacters("    <jndi>");
+                    streamWriter.writeCharacters(node.asString().trim());
+                    streamWriter.writeCharacters("</jndi>\n");
+                }
+                streamWriter.writeCharacters("</");
+                streamWriter.writeCharacters(attr.getName());
+                streamWriter.writeCharacters(">\n");
+            } else if (JaxrsAttribute.mapAttributes.contains(attr)) {
+                streamWriter.writeCharacters("<");
+                streamWriter.writeCharacters(attr.getName());
+                streamWriter.writeCharacters(">\n");
+                List<ModelNode> list = subsystem.get(attr.getName()).asList();
+                for (ModelNode node : list) {
+                    streamWriter.writeCharacters("    <entry key=\">");
+                    streamWriter.writeCharacters(node.asString().trim());
+                    streamWriter.writeCharacters("</entry>\n");
+                }
+                streamWriter.writeCharacters("</");
+                streamWriter.writeCharacters(attr.getName());
+                streamWriter.writeCharacters(">");
+            }
+            
         }
         streamWriter.writeEndElement();
     }
 
-    protected void handleElement(final XMLExtendedStreamReader reader,
+    protected void handleSimpleElement(final XMLExtendedStreamReader reader,
             final EnumSet<JaxrsElement> encountered,
             final ModelNode subsystem,
             final JaxrsElement element) throws XMLStreamException {
@@ -177,12 +226,59 @@ public class JaxrsSubsystemParser_2_0 implements XMLStreamConstants, XMLElementR
         }
         final String name = element.getLocalName();
         final String value = parseElementNoAttributes(reader);
-        final SimpleAttributeDefinition attribute = JaxrsConstants.nameToAttributeMap.get(name);
+        final SimpleAttributeDefinition attribute = (SimpleAttributeDefinition) JaxrsConstants.nameToAttributeMap.get(name);
         attribute.parseAndSetParameter(value, subsystem, reader);
     }
 
+    protected void handleList(final String tag,
+            final XMLExtendedStreamReader reader,
+            final EnumSet<JaxrsElement> encountered,
+            final ModelNode subsystem,
+            final JaxrsElement element) throws XMLStreamException {
+
+        if (!encountered.add(element)) {
+            throw unexpectedElement(reader);
+        }
+        final String name = element.getLocalName();
+        System.out.println("name: " + name);
+        while (reader.hasNext() && reader.nextTag() != END_ELEMENT) {
+            if (!tag.equals(reader.getLocalName())) {
+                System.out.println("unexpected element: " + element.getLocalName() + ", tag: " + tag);
+                throw unexpectedElement(reader);
+            }
+            String value = parseElementNoAttributes(reader);
+            
+            subsystem.get(name).add(value);
+        }
+    }
+
+    protected void handleMap(final XMLExtendedStreamReader reader,
+            final EnumSet<JaxrsElement> encountered,
+            final ModelNode subsystem,
+            final JaxrsElement element) throws XMLStreamException {
+
+        if (!encountered.add(element)) {
+            throw unexpectedElement(reader);
+        }
+        final String name = element.getLocalName();
+        final PropertiesAttributeDefinition attribute = (PropertiesAttributeDefinition) JaxrsConstants.nameToAttributeMap.get(name);
+        while (reader.hasNext() && reader.nextTag() != END_ELEMENT) {
+            if (!"entry".equals(reader.getLocalName())) {
+                throw unexpectedElement(reader);
+            }
+            final String[] array = requireAttributes(reader, "key");
+            if (array.length != 1) {
+                throw unexpectedElement(reader);
+            }
+            String value = reader.getElementText().trim();
+            attribute.parseAndAddParameterElement(array[0], value, subsystem, reader);
+        }
+    }
+    
     protected String parseElementNoAttributes(final XMLExtendedStreamReader reader) throws XMLStreamException {
         requireNoAttributes(reader);
         return reader.getElementText().trim();
     }
+    
+    SimpleAttributeDefinition CLASS = new SimpleAttributeDefinitionBuilder("class", ModelType.STRING).build();
 }

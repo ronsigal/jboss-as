@@ -36,8 +36,8 @@ import java.util.Set;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
+import org.jboss.as.controller.AttributeDefinition;
 import org.jboss.as.controller.PathElement;
-import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.ee.structure.DeploymentType;
 import org.jboss.as.ee.structure.DeploymentTypeMarker;
 import org.jboss.as.server.deployment.Attachments;
@@ -548,7 +548,7 @@ public class JaxrsIntegrationProcessor implements DeploymentUnitProcessor {
     /**
      * Send value to RESTEasy only if it's not null, empty string, or the default value.
      */
-    private boolean isTransmittable(SimpleAttributeDefinition attribute, ModelNode modelNode) {
+    private boolean isTransmittable(AttributeDefinition attribute, ModelNode modelNode) {
         if (modelNode == null) {
             return false;
         }

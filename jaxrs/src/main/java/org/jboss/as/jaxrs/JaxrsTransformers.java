@@ -22,6 +22,7 @@
 
 package org.jboss.as.jaxrs;
 
+import org.jboss.as.controller.AttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.transform.ExtensionTransformerRegistration;
 import org.jboss.as.controller.transform.SubsystemTransformerRegistration;
@@ -76,7 +77,7 @@ public class JaxrsTransformers implements ExtensionTransformerRegistration {
         TransformationDescription.Tools.register(builder.build(), subsystemRegistration, JaxrsExtension.MODEL_VERSION_1_0_0);
     }
 
-    private static void checkAttribute(AttributeTransformationDescriptionBuilder builder, SimpleAttributeDefinition attribute) {
+    private static void checkAttribute(AttributeTransformationDescriptionBuilder builder, AttributeDefinition attribute) {
         builder.setDiscard(new DiscardAttributeChecker.DiscardAttributeValueChecker(attribute.getDefaultValue()), attribute)
                .addRejectCheck(RejectAttributeChecker.DEFINED, attribute);
     }

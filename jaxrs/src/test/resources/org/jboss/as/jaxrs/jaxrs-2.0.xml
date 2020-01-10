@@ -3,18 +3,37 @@
     <resteasy-add-charset>false</resteasy-add-charset>
     <resteasy-buffer-exception-entity>false</resteasy-buffer-exception-entity>
     <resteasy-disable-html-sanitizer>true</resteasy-disable-html-sanitizer>
-    <resteasy-disable-providers>a.b,cc.dd.ee</resteasy-disable-providers>
+    <resteasy-disable-providers>
+        <class>a.b</class>
+        <class>c</class>
+    </resteasy-disable-providers>
     <resteasy-document-expand-entity-references>true</resteasy-document-expand-entity-references>
     <resteasy-document-secure-disableDTDs>false</resteasy-document-secure-disableDTDs>
     <resteasy-document-secure-processing-feature>false</resteasy-document-secure-processing-feature>
     <resteasy-gzip-max-input>777</resteasy-gzip-max-input>
-    <resteasy-jndi-resources>java:a/b, java:k.l/mm.nnn</resteasy-jndi-resources>
-    <resteasy-language-mappings> o:4444 , pp:5555,q:6666</resteasy-language-mappings>
-    <resteasy-media-type-mappings>r:77777</resteasy-media-type-mappings>
+    <resteasy-jndi-resources>
+       <jndi>java:a/b</jndi>
+       <jndi>java:k.l/mm/nnn</jndi>
+    </resteasy-jndi-resources>
+    <resteasy-language-mappings>
+        <entry key="o">4444</entry>
+        <entry key="pp">5555</entry>
+        <entry key="q">6666</entry>
+    </resteasy-language-mappings>
+    <resteasy-media-type-mappings>
+        <entry key="r">77777</entry>
+    </resteasy-media-type-mappings>
     <resteasy-media-type-param-mapping>tu</resteasy-media-type-param-mapping>
     <resteasy-preferJacksonOverJsonB>true</resteasy-preferJacksonOverJsonB>
-    <resteasy-providers> s, t.t </resteasy-providers>
-    <resteasy-resources>u.u,v,w</resteasy-resources>
+    <resteasy-providers>
+      <class> s </class>
+      <class> t.t </class>
+    </resteasy-providers>
+    <resteasy-resources>
+      <class>u.u</class>
+      <class>v</class>
+      <class>w</class>
+    </resteasy-resources>
     <resteasy-rfc7232preconditions>true</resteasy-rfc7232preconditions>
     <resteasy-role-based-security>true</resteasy-role-based-security>
     <resteasy-secure-random-max-use>2222</resteasy-secure-random-max-use>

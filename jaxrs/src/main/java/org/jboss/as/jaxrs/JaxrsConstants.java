@@ -24,7 +24,7 @@ package org.jboss.as.jaxrs;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.jboss.as.controller.SimpleAttributeDefinition;
+import org.jboss.as.controller.AttributeDefinition;
 
 public class JaxrsConstants {
 
@@ -51,7 +51,7 @@ public class JaxrsConstants {
     public static final String RESTEASY_USE_CONTAINER_FORM_PARAMS = "resteasy-use-container-form-params";
     public static final String RESTEASY_WIDER_REQUEST_MATCHING = "resteasy-wider-request-matching";
 
-    public static final Map<String, SimpleAttributeDefinition> nameToAttributeMap = new HashMap<String,SimpleAttributeDefinition> ();
+    public static final Map<String, AttributeDefinition> nameToAttributeMap = new HashMap<String,AttributeDefinition> ();
     static {
         nameToAttributeMap.put(JAXRS_2_0_REQUEST_MATCHING, JaxrsAttribute.JAXRS_2_0_REQUEST_MATCHING);
         nameToAttributeMap.put(RESTEASY_ADD_CHARSET, JaxrsAttribute.RESTEASY_ADD_CHARSET);

@@ -21,8 +21,15 @@
  */
 package org.jboss.as.jaxrs;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.jboss.as.controller.AttributeDefinition;
+import org.jboss.as.controller.PropertiesAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
+import org.jboss.as.controller.StringListAttributeDefinition;
 import org.jboss.as.controller.operations.validation.ModelTypeValidator;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
@@ -34,7 +41,7 @@ import org.jboss.dmr.ModelType;
  */
 public interface  JaxrsAttribute {
 
-    public static final String RESTEASY_PARAMETER_GROUP = "resteasy-parameter-group";
+    public static final String RESTEASY_PARAMETER_GROUP = "resteasy";
 
     SimpleAttributeDefinition JAXRS_2_0_REQUEST_MATCHING = new SimpleAttributeDefinitionBuilder(JaxrsConstants.JAXRS_2_0_REQUEST_MATCHING, ModelType.BOOLEAN)
             .setRequired(false)
@@ -59,7 +66,7 @@ public interface  JaxrsAttribute {
             .setDefaultValue(ModelNode.TRUE)
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
-
+    
     SimpleAttributeDefinition RESTEASY_DISABLE_HTML_SANITIZER = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_DISABLE_HTML_SANITIZER, ModelType.BOOLEAN)
             .setRequired(false)
             .setAllowExpression(true)
@@ -68,10 +75,11 @@ public interface  JaxrsAttribute {
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
 
-    SimpleAttributeDefinition RESTEASY_DISABLE_PROVIDERS = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_DISABLE_PROVIDERS, ModelType.STRING)
+    StringListAttributeDefinition RESTEASY_DISABLE_PROVIDERS = new StringListAttributeDefinition.Builder(JaxrsConstants.RESTEASY_DISABLE_PROVIDERS)
             .setRequired(false)
             .setAllowExpression(true)
-            .setValidator(JaxrsValidator.LIST_VALIDATOR_INSTANCE)
+            .setAllowDuplicates(false)
+//            .setValidator(JaxrsValidator.LIST_VALIDATOR_INSTANCE) ??
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
 
@@ -107,24 +115,24 @@ public interface  JaxrsAttribute {
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
 
-    SimpleAttributeDefinition RESTEASY_JNDI_RESOURCES = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_JNDI_RESOURCES, ModelType.STRING)
+    StringListAttributeDefinition RESTEASY_JNDI_RESOURCES = new StringListAttributeDefinition.Builder(JaxrsConstants.RESTEASY_JNDI_RESOURCES)
             .setRequired(false)
             .setAllowExpression(true)
-            .setValidator(JaxrsValidator.MAP_VALIDATOR_INSTANCE)
+//            .setValidator(JaxrsValidator.MAP_VALIDATOR_INSTANCE) ??
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
 
-    SimpleAttributeDefinition RESTEASY_LANGUAGE_MAPPINGS = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_LANGUAGE_MAPPINGS, ModelType.STRING)
+    PropertiesAttributeDefinition RESTEASY_LANGUAGE_MAPPINGS = new PropertiesAttributeDefinition.Builder(JaxrsConstants.RESTEASY_LANGUAGE_MAPPINGS, true)
             .setRequired(false)
             .setAllowExpression(true)
-            .setValidator(JaxrsValidator.MAP_VALIDATOR_INSTANCE)
+//            .setValidator(JaxrsValidator.MAP_VALIDATOR_INSTANCE) ??
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
 
-    SimpleAttributeDefinition RESTEASY_MEDIA_TYPE_MAPPINGS = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_MEDIA_TYPE_MAPPINGS, ModelType.STRING)
+    PropertiesAttributeDefinition RESTEASY_MEDIA_TYPE_MAPPINGS = new PropertiesAttributeDefinition.Builder(JaxrsConstants.RESTEASY_MEDIA_TYPE_MAPPINGS, true)
             .setRequired(false)
             .setAllowExpression(true)
-            .setValidator(JaxrsValidator.MAP_VALIDATOR_INSTANCE)
+//            .setValidator(JaxrsValidator.MAP_VALIDATOR_INSTANCE)
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
 
@@ -143,17 +151,19 @@ public interface  JaxrsAttribute {
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
 
-    SimpleAttributeDefinition RESTEASY_PROVIDERS = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_PROVIDERS, ModelType.STRING)
+    StringListAttributeDefinition RESTEASY_PROVIDERS = new StringListAttributeDefinition.Builder(JaxrsConstants.RESTEASY_PROVIDERS)
             .setRequired(false)
             .setAllowExpression(true)
-            .setValidator(JaxrsValidator.LIST_VALIDATOR_INSTANCE)
+            .setAllowDuplicates(false)
+//            .setValidator(JaxrsValidator.LIST_VALIDATOR_INSTANCE) ??
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
 
-    SimpleAttributeDefinition RESTEASY_RESOURCES = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_RESOURCES, ModelType.STRING)
+    StringListAttributeDefinition RESTEASY_RESOURCES = new StringListAttributeDefinition.Builder(JaxrsConstants.RESTEASY_RESOURCES)
             .setRequired(false)
             .setAllowExpression(true)
-            .setValidator(JaxrsValidator.LIST_VALIDATOR_INSTANCE)
+            .setAllowDuplicates(false)
+//            .setValidator(JaxrsValidator.LIST_VALIDATOR_INSTANCE) ??
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
 
@@ -205,7 +215,7 @@ public interface  JaxrsAttribute {
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
 
-    public static SimpleAttributeDefinition[] attributes = new SimpleAttributeDefinition[] {
+    public static AttributeDefinition[] attributes = new AttributeDefinition[] {
             JAXRS_2_0_REQUEST_MATCHING,
             RESTEASY_ADD_CHARSET,
             RESTEASY_BUFFER_EXCEPTION_ENTITY,
@@ -229,4 +239,43 @@ public interface  JaxrsAttribute {
             RESTEASY_USE_CONTAINER_FORM_PARAMS,
             RESTEASY_WIDER_REQUEST_MATCHING
     };
+
+    public static AttributeDefinition[] simpleAttributesArray = new AttributeDefinition[] {
+            JAXRS_2_0_REQUEST_MATCHING,
+            RESTEASY_ADD_CHARSET,
+            RESTEASY_BUFFER_EXCEPTION_ENTITY,
+            RESTEASY_DISABLE_HTML_SANITIZER,
+            RESTEASY_DOCUMENT_EXPAND_ENTITY_REFERENCES,
+            RESTEASY_DOCUMENT_SECURE_DISABLE_DTDS,
+            RESTEASY_DOCUMENT_SECURE_PROCESSING_FEATURE,
+            RESTEASY_GZIP_MAX_INPUT,
+            RESTEASY_MEDIA_TYPE_PARAM_MAPPING,
+            RESTEASY_PREFERJACKSONOVERJSONB,
+            RESTEASY_RFC7232_PRECONDITIONS,
+            RESTEASY_ROLE_BASED_SECURITY,
+            RESTEASY_SECURE_RANDOM_MAX_USE,
+            RESTEASY_USE_BUILTIN_PROVIDERS,
+            RESTEASY_USE_CONTAINER_FORM_PARAMS,
+            RESTEASY_WIDER_REQUEST_MATCHING
+    };
+
+    public static AttributeDefinition[] listAttributeArray = new AttributeDefinition[] {
+            RESTEASY_DISABLE_PROVIDERS,
+            RESTEASY_PROVIDERS,
+            RESTEASY_RESOURCES
+    };
+
+    public static AttributeDefinition[] jndiAttributesArray = new AttributeDefinition[] {
+            RESTEASY_JNDI_RESOURCES
+    };
+
+    public static AttributeDefinition[] mapAttributeArray = new AttributeDefinition[] {
+            RESTEASY_LANGUAGE_MAPPINGS,
+            RESTEASY_MEDIA_TYPE_MAPPINGS
+    };
+    
+    public Set<AttributeDefinition> simpleAttributes = new HashSet<>(Arrays. asList(simpleAttributesArray));
+    public Set<AttributeDefinition> listAttributes = new HashSet<>(Arrays. asList(listAttributeArray));
+    public Set<AttributeDefinition> jndiAttributes = new HashSet<>(Arrays. asList(jndiAttributesArray));
+    public Set<AttributeDefinition> mapAttributes = new HashSet<>(Arrays. asList(mapAttributeArray));
 }
