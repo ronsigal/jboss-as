@@ -36,12 +36,9 @@ import org.jboss.as.controller.AttributeDefinition;
 import org.jboss.as.controller.PathAddress;
 import org.jboss.as.controller.PropertiesAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinition;
-import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
 import org.jboss.as.controller.operations.common.Util;
 import org.jboss.as.controller.persistence.SubsystemMarshallingContext;
 import org.jboss.dmr.ModelNode;
-import org.jboss.dmr.ModelType;
-import org.jboss.dmr.Property;
 import org.jboss.staxmapper.XMLElementReader;
 import org.jboss.staxmapper.XMLElementWriter;
 import org.jboss.staxmapper.XMLExtendedStreamReader;
@@ -168,42 +165,7 @@ public class JaxrsSubsystemParser_2_0 implements XMLStreamConstants, XMLElementR
         context.startSubsystemElement(JaxrsExtension.NAMESPACE_2_0, false);
         ModelNode subsystem = context.getModelNode();
         for (AttributeDefinition attr : JaxrsAttribute.ATTRIBUTES) {
-            final String attrName = attr.getName();
-            if (!subsystem.hasDefined(attrName)) {
-                continue;
-            }
-            if (JaxrsAttribute.SIMPLE_ATTRIBUTES.contains(attr)) {
-                attr.marshallAsElement(subsystem, true, streamWriter);
-            } else if (JaxrsAttribute.LIST_ATTRIBUTES.contains(attr)) {
-                streamWriter.writeStartElement(attr.getName());
-                List<ModelNode> list = subsystem.get(attr.getName()).asList();
-                for (ModelNode node : list) {
-                    streamWriter.writeStartElement("class");
-                    streamWriter.writeCharacters(node.asString().trim());
-                    streamWriter.writeEndElement();
-                }
-                streamWriter.writeEndElement();
-            } else if (JaxrsAttribute.JNDI_ATTRIBUTES.contains(attr)) {
-                streamWriter.writeStartElement(attr.getName());
-                List<ModelNode> list = subsystem.get(attr.getName()).asList();
-                for (ModelNode node : list) {
-                    streamWriter.writeStartElement("jndi");
-                    streamWriter.writeCharacters(node.asString().trim());
-                    streamWriter.writeEndElement();
-                }
-                streamWriter.writeEndElement();
-            } else if (JaxrsAttribute.MAP_ATTRIBUTES.contains(attr)) {
-                streamWriter.writeStartElement(attr.getName());
-                List<ModelNode> list = subsystem.get(attr.getName()).asList();
-                for (ModelNode node : list) {
-                    Property property = node.asProperty();
-                    streamWriter.writeStartElement("entry");
-                    streamWriter.writeAttribute("key", property.getName());
-                    streamWriter.writeCharacters(property.getValue().asString().trim());
-                    streamWriter.writeEndElement();
-                }
-                streamWriter.writeEndElement();
-            }
+            attr.marshallAsElement(subsystem, true, streamWriter);
         }
         streamWriter.writeEndElement();
     }
@@ -268,6 +230,4 @@ public class JaxrsSubsystemParser_2_0 implements XMLStreamConstants, XMLElementR
         requireNoAttributes(reader);
         return reader.getElementText().trim();
     }
-
-    SimpleAttributeDefinition CLASS = new SimpleAttributeDefinitionBuilder("class", ModelType.STRING).build();
 }

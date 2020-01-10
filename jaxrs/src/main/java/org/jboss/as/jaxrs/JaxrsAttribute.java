@@ -23,9 +23,14 @@ package org.jboss.as.jaxrs;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 import org.jboss.as.controller.AttributeDefinition;
+import org.jboss.as.controller.DefaultAttributeMarshaller;
 import org.jboss.as.controller.PropertiesAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
@@ -33,17 +38,18 @@ import org.jboss.as.controller.StringListAttributeDefinition;
 import org.jboss.as.controller.operations.validation.ModelTypeValidator;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
+import org.jboss.dmr.Property;
 
 /**
  * Jaxrs configuration attributes.
  *
  * @author <a href="mailto:rsigal@redhat.com">Ron Sigal</a>
  */
-public interface  JaxrsAttribute {
+public abstract class JaxrsAttribute {
 
     public static final String RESTEASY_PARAMETER_GROUP = "resteasy";
 
-    SimpleAttributeDefinition JAXRS_2_0_REQUEST_MATCHING = new SimpleAttributeDefinitionBuilder(JaxrsConstants.JAXRS_2_0_REQUEST_MATCHING, ModelType.BOOLEAN)
+    public static final SimpleAttributeDefinition JAXRS_2_0_REQUEST_MATCHING = new SimpleAttributeDefinitionBuilder(JaxrsConstants.JAXRS_2_0_REQUEST_MATCHING, ModelType.BOOLEAN)
             .setRequired(false)
             .setAllowExpression(true)
             .setValidator(new ModelTypeValidator(ModelType.BOOLEAN, false))
@@ -51,7 +57,7 @@ public interface  JaxrsAttribute {
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
 
-    SimpleAttributeDefinition RESTEASY_ADD_CHARSET = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_ADD_CHARSET, ModelType.BOOLEAN)
+    public static final SimpleAttributeDefinition RESTEASY_ADD_CHARSET = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_ADD_CHARSET, ModelType.BOOLEAN)
             .setRequired(false)
             .setAllowExpression(true)
             .setValidator(new ModelTypeValidator(ModelType.BOOLEAN, false))
@@ -59,7 +65,7 @@ public interface  JaxrsAttribute {
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
 
-    SimpleAttributeDefinition RESTEASY_BUFFER_EXCEPTION_ENTITY = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_BUFFER_EXCEPTION_ENTITY, ModelType.BOOLEAN)
+    public static final SimpleAttributeDefinition RESTEASY_BUFFER_EXCEPTION_ENTITY = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_BUFFER_EXCEPTION_ENTITY, ModelType.BOOLEAN)
             .setRequired(false)
             .setAllowExpression(true)
             .setValidator(new ModelTypeValidator(ModelType.BOOLEAN, false))
@@ -67,7 +73,7 @@ public interface  JaxrsAttribute {
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
 
-    SimpleAttributeDefinition RESTEASY_DISABLE_HTML_SANITIZER = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_DISABLE_HTML_SANITIZER, ModelType.BOOLEAN)
+    public static final SimpleAttributeDefinition RESTEASY_DISABLE_HTML_SANITIZER = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_DISABLE_HTML_SANITIZER, ModelType.BOOLEAN)
             .setRequired(false)
             .setAllowExpression(true)
             .setValidator(new ModelTypeValidator(ModelType.BOOLEAN, false))
@@ -75,15 +81,15 @@ public interface  JaxrsAttribute {
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
 
-    StringListAttributeDefinition RESTEASY_DISABLE_PROVIDERS = new StringListAttributeDefinition.Builder(JaxrsConstants.RESTEASY_DISABLE_PROVIDERS)
+    public static final StringListAttributeDefinition RESTEASY_DISABLE_PROVIDERS = new StringListAttributeDefinition.Builder(JaxrsConstants.RESTEASY_DISABLE_PROVIDERS)
             .setRequired(false)
             .setAllowExpression(true)
             .setAllowDuplicates(false)
-//            .setValidator(JaxrsValidator.LIST_VALIDATOR_INSTANCE) ??
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
+            .setAttributeMarshaller(ListMarshaller.INSTANCE)
             .build();
 
-    SimpleAttributeDefinition RESTEASY_DOCUMENT_EXPAND_ENTITY_REFERENCES = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_DOCUMENT_EXPAND_ENTITY_REFERENCES, ModelType.BOOLEAN)
+    public static final SimpleAttributeDefinition RESTEASY_DOCUMENT_EXPAND_ENTITY_REFERENCES = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_DOCUMENT_EXPAND_ENTITY_REFERENCES, ModelType.BOOLEAN)
             .setRequired(false)
             .setAllowExpression(true)
             .setValidator(new ModelTypeValidator(ModelType.BOOLEAN, false))
@@ -91,7 +97,7 @@ public interface  JaxrsAttribute {
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
 
-    SimpleAttributeDefinition RESTEASY_DOCUMENT_SECURE_DISABLE_DTDS = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_DOCUMENT_SECURE_DISABLE_DTDS, ModelType.BOOLEAN)
+    public static final SimpleAttributeDefinition RESTEASY_DOCUMENT_SECURE_DISABLE_DTDS = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_DOCUMENT_SECURE_DISABLE_DTDS, ModelType.BOOLEAN)
             .setRequired(false)
             .setAllowExpression(true)
             .setValidator(new ModelTypeValidator(ModelType.BOOLEAN, false))
@@ -99,7 +105,7 @@ public interface  JaxrsAttribute {
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
 
-    SimpleAttributeDefinition RESTEASY_DOCUMENT_SECURE_PROCESSING_FEATURE = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_DOCUMENT_SECURE_PROCESSING_FEATURE, ModelType.BOOLEAN)
+    public static final SimpleAttributeDefinition RESTEASY_DOCUMENT_SECURE_PROCESSING_FEATURE = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_DOCUMENT_SECURE_PROCESSING_FEATURE, ModelType.BOOLEAN)
             .setRequired(false)
             .setAllowExpression(true)
             .setValidator(new ModelTypeValidator(ModelType.BOOLEAN, false))
@@ -107,7 +113,7 @@ public interface  JaxrsAttribute {
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
 
-    SimpleAttributeDefinition RESTEASY_GZIP_MAX_INPUT = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_GZIP_MAX_INPUT, ModelType.INT)
+    public static final SimpleAttributeDefinition RESTEASY_GZIP_MAX_INPUT = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_GZIP_MAX_INPUT, ModelType.INT)
             .setRequired(false)
             .setAllowExpression(true)
             .setValidator(new ModelTypeValidator(ModelType.INT, false))
@@ -115,35 +121,35 @@ public interface  JaxrsAttribute {
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
 
-    StringListAttributeDefinition RESTEASY_JNDI_RESOURCES = new StringListAttributeDefinition.Builder(JaxrsConstants.RESTEASY_JNDI_RESOURCES)
+    public static final StringListAttributeDefinition RESTEASY_JNDI_RESOURCES = new StringListAttributeDefinition.Builder(JaxrsConstants.RESTEASY_JNDI_RESOURCES)
             .setRequired(false)
             .setAllowExpression(true)
-//            .setValidator(JaxrsValidator.MAP_VALIDATOR_INSTANCE) ??
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
+            .setAttributeMarshaller(ListMarshaller.INSTANCE)
             .build();
 
-    PropertiesAttributeDefinition RESTEASY_LANGUAGE_MAPPINGS = new PropertiesAttributeDefinition.Builder(JaxrsConstants.RESTEASY_LANGUAGE_MAPPINGS, true)
+    public static final PropertiesAttributeDefinition RESTEASY_LANGUAGE_MAPPINGS = new PropertiesAttributeDefinition.Builder(JaxrsConstants.RESTEASY_LANGUAGE_MAPPINGS, true)
             .setRequired(false)
             .setAllowExpression(true)
-//            .setValidator(JaxrsValidator.MAP_VALIDATOR_INSTANCE) ??
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
+            .setAttributeMarshaller(MapMarshaller.INSTANCE)
             .build();
 
-    PropertiesAttributeDefinition RESTEASY_MEDIA_TYPE_MAPPINGS = new PropertiesAttributeDefinition.Builder(JaxrsConstants.RESTEASY_MEDIA_TYPE_MAPPINGS, true)
+    public static final PropertiesAttributeDefinition RESTEASY_MEDIA_TYPE_MAPPINGS = new PropertiesAttributeDefinition.Builder(JaxrsConstants.RESTEASY_MEDIA_TYPE_MAPPINGS, true)
             .setRequired(false)
             .setAllowExpression(true)
-//            .setValidator(JaxrsValidator.MAP_VALIDATOR_INSTANCE)
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
+            .setAttributeMarshaller(MapMarshaller.INSTANCE)
             .build();
 
-    SimpleAttributeDefinition RESTEASY_MEDIA_TYPE_PARAM_MAPPING = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_MEDIA_TYPE_PARAM_MAPPING, ModelType.STRING)
+    public static final SimpleAttributeDefinition RESTEASY_MEDIA_TYPE_PARAM_MAPPING = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_MEDIA_TYPE_PARAM_MAPPING, ModelType.STRING)
             .setRequired(false)
             .setAllowExpression(true)
             .setValidator(new ModelTypeValidator(ModelType.STRING, true))
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
 
-    SimpleAttributeDefinition RESTEASY_PREFERJACKSONOVERJSONB = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_PREFERJACKSONOVERJSONB, ModelType.BOOLEAN)
+    public static final SimpleAttributeDefinition RESTEASY_PREFERJACKSONOVERJSONB = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_PREFERJACKSONOVERJSONB, ModelType.BOOLEAN)
             .setRequired(false)
             .setAllowExpression(true)
             .setValidator(new ModelTypeValidator(ModelType.BOOLEAN, false))
@@ -151,23 +157,23 @@ public interface  JaxrsAttribute {
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
 
-    StringListAttributeDefinition RESTEASY_PROVIDERS = new StringListAttributeDefinition.Builder(JaxrsConstants.RESTEASY_PROVIDERS)
+    public static final StringListAttributeDefinition RESTEASY_PROVIDERS = new StringListAttributeDefinition.Builder(JaxrsConstants.RESTEASY_PROVIDERS)
             .setRequired(false)
             .setAllowExpression(true)
             .setAllowDuplicates(false)
-//            .setValidator(JaxrsValidator.LIST_VALIDATOR_INSTANCE) ??
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
+            .setAttributeMarshaller(ListMarshaller.INSTANCE)
             .build();
 
-    StringListAttributeDefinition RESTEASY_RESOURCES = new StringListAttributeDefinition.Builder(JaxrsConstants.RESTEASY_RESOURCES)
+    public static final StringListAttributeDefinition RESTEASY_RESOURCES = new StringListAttributeDefinition.Builder(JaxrsConstants.RESTEASY_RESOURCES)
             .setRequired(false)
             .setAllowExpression(true)
             .setAllowDuplicates(false)
-//            .setValidator(JaxrsValidator.LIST_VALIDATOR_INSTANCE) ??
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
+            .setAttributeMarshaller(ListMarshaller.INSTANCE)
             .build();
 
-    SimpleAttributeDefinition RESTEASY_RFC7232_PRECONDITIONS = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_RFC7232_PRECONDITIONS, ModelType.BOOLEAN)
+    public static final SimpleAttributeDefinition RESTEASY_RFC7232_PRECONDITIONS = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_RFC7232_PRECONDITIONS, ModelType.BOOLEAN)
             .setRequired(false)
             .setAllowExpression(true)
             .setValidator(new ModelTypeValidator(ModelType.BOOLEAN, false))
@@ -175,7 +181,7 @@ public interface  JaxrsAttribute {
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
 
-    SimpleAttributeDefinition RESTEASY_ROLE_BASED_SECURITY = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_ROLE_BASED_SECURITY, ModelType.BOOLEAN)
+    public static final SimpleAttributeDefinition RESTEASY_ROLE_BASED_SECURITY = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_ROLE_BASED_SECURITY, ModelType.BOOLEAN)
             .setRequired(false)
             .setAllowExpression(true)
             .setValidator(new ModelTypeValidator(ModelType.BOOLEAN, false))
@@ -183,7 +189,7 @@ public interface  JaxrsAttribute {
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
 
-    SimpleAttributeDefinition RESTEASY_SECURE_RANDOM_MAX_USE = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_SECURE_RANDOM_MAX_USE, ModelType.INT)
+    public static final SimpleAttributeDefinition RESTEASY_SECURE_RANDOM_MAX_USE = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_SECURE_RANDOM_MAX_USE, ModelType.INT)
             .setRequired(false)
             .setAllowExpression(true)
             .setValidator(new ModelTypeValidator(ModelType.INT, false))
@@ -191,7 +197,7 @@ public interface  JaxrsAttribute {
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
 
-    SimpleAttributeDefinition RESTEASY_USE_BUILTIN_PROVIDERS = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_USE_BUILTIN_PROVIDERS, ModelType.BOOLEAN)
+    public static final SimpleAttributeDefinition RESTEASY_USE_BUILTIN_PROVIDERS = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_USE_BUILTIN_PROVIDERS, ModelType.BOOLEAN)
             .setRequired(false)
             .setAllowExpression(true)
             .setValidator(new ModelTypeValidator(ModelType.BOOLEAN, false))
@@ -199,7 +205,7 @@ public interface  JaxrsAttribute {
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
 
-    SimpleAttributeDefinition RESTEASY_USE_CONTAINER_FORM_PARAMS = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_USE_CONTAINER_FORM_PARAMS, ModelType.BOOLEAN)
+    public static final SimpleAttributeDefinition RESTEASY_USE_CONTAINER_FORM_PARAMS = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_USE_CONTAINER_FORM_PARAMS, ModelType.BOOLEAN)
             .setRequired(false)
             .setAllowExpression(true)
             .setValidator(new ModelTypeValidator(ModelType.BOOLEAN, false))
@@ -207,7 +213,7 @@ public interface  JaxrsAttribute {
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
 
-    SimpleAttributeDefinition RESTEASY_WIDER_REQUEST_MATCHING = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_WIDER_REQUEST_MATCHING, ModelType.BOOLEAN)
+    public static final SimpleAttributeDefinition RESTEASY_WIDER_REQUEST_MATCHING = new SimpleAttributeDefinitionBuilder(JaxrsConstants.RESTEASY_WIDER_REQUEST_MATCHING, ModelType.BOOLEAN)
             .setRequired(false)
             .setAllowExpression(true)
             .setValidator(new ModelTypeValidator(ModelType.BOOLEAN, false))
@@ -215,7 +221,7 @@ public interface  JaxrsAttribute {
             .setAttributeGroup(RESTEASY_PARAMETER_GROUP)
             .build();
 
-    public static AttributeDefinition[] ATTRIBUTES = new AttributeDefinition[] {
+    public static final AttributeDefinition[] ATTRIBUTES = new AttributeDefinition[] {
             JAXRS_2_0_REQUEST_MATCHING,
             RESTEASY_ADD_CHARSET,
             RESTEASY_BUFFER_EXCEPTION_ENTITY,
@@ -240,7 +246,7 @@ public interface  JaxrsAttribute {
             RESTEASY_WIDER_REQUEST_MATCHING
     };
 
-    public static AttributeDefinition[] simpleAttributesArray = new AttributeDefinition[] {
+    public static final AttributeDefinition[] simpleAttributesArray = new AttributeDefinition[] {
             JAXRS_2_0_REQUEST_MATCHING,
             RESTEASY_ADD_CHARSET,
             RESTEASY_BUFFER_EXCEPTION_ENTITY,
@@ -259,13 +265,13 @@ public interface  JaxrsAttribute {
             RESTEASY_WIDER_REQUEST_MATCHING
     };
 
-    public static AttributeDefinition[] listAttributeArray = new AttributeDefinition[] {
+    public static final AttributeDefinition[] listAttributeArray = new AttributeDefinition[] {
             RESTEASY_DISABLE_PROVIDERS,
             RESTEASY_PROVIDERS,
             RESTEASY_RESOURCES
     };
 
-    public static AttributeDefinition[] jndiAttributesArray = new AttributeDefinition[] {
+    public static final AttributeDefinition[] jndiAttributesArray = new AttributeDefinition[] {
             RESTEASY_JNDI_RESOURCES
     };
 
@@ -274,8 +280,50 @@ public interface  JaxrsAttribute {
             RESTEASY_MEDIA_TYPE_MAPPINGS
     };
 
-    public Set<AttributeDefinition> SIMPLE_ATTRIBUTES = new HashSet<>(Arrays. asList(simpleAttributesArray));
-    public Set<AttributeDefinition> LIST_ATTRIBUTES = new HashSet<>(Arrays. asList(listAttributeArray));
-    public Set<AttributeDefinition> JNDI_ATTRIBUTES = new HashSet<>(Arrays. asList(jndiAttributesArray));
-    public Set<AttributeDefinition> MAP_ATTRIBUTES = new HashSet<>(Arrays. asList(mapAttributeArray));
+    public static final Set<AttributeDefinition> simpleAttributes = new HashSet<>(Arrays. asList(simpleAttributesArray));
+    public static final Set<AttributeDefinition> listAttributes = new HashSet<>(Arrays. asList(listAttributeArray));
+    public static final Set<AttributeDefinition> jndiAttributes = new HashSet<>(Arrays. asList(jndiAttributesArray));
+    public static final Set<AttributeDefinition> mapAttributes = new HashSet<>(Arrays. asList(mapAttributeArray));
+
+    private static class ListMarshaller extends DefaultAttributeMarshaller {
+        static final ListMarshaller INSTANCE = new ListMarshaller();
+
+        @Override
+        public void marshallAsElement(final AttributeDefinition attribute, final ModelNode resourceModel, final boolean marshallDefault, final XMLStreamWriter writer) throws XMLStreamException {
+            if (isMarshallable(attribute, resourceModel, marshallDefault)) {
+                writer.writeStartElement(attribute.getXmlName());
+                List<ModelNode> list = resourceModel.get(attribute.getName()).asList();
+                for (ModelNode node : list) {
+                    String child = "class";
+                    if (jndiAttributes.contains(attribute)) {
+                        child = "jndi";
+                    }
+                    writer.writeStartElement(child);
+                    writer.writeCharacters(node.asString().trim());
+                    writer.writeEndElement();
+                }
+                writer.writeEndElement();
+            }
+        }
+    }
+
+    private static class MapMarshaller extends DefaultAttributeMarshaller {
+        static final MapMarshaller INSTANCE = new MapMarshaller();
+
+        @Override
+        public void marshallAsElement(final AttributeDefinition attribute, final ModelNode resourceModel, final boolean marshallDefault, final XMLStreamWriter writer) throws XMLStreamException {
+            if (isMarshallable(attribute, resourceModel, marshallDefault)) {
+                writer.writeStartElement(attribute.getXmlName());
+                List<ModelNode> list = resourceModel.get(attribute.getName()).asList();
+                for (ModelNode node : list) {
+                    Property property = node.asProperty();
+                    writer.writeStartElement("entry");
+                    writer.writeAttribute("key", property.getName());
+                    writer.writeCharacters(property.getValue().asString().trim());
+                    writer.writeEndElement();
+                }
+                writer.writeEndElement();
+            }
+        }
+    }
 }
